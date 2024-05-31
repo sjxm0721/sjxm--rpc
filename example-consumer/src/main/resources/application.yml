@@ -1,0 +1,5 @@
+rpc:
+  name: sjxmrpcYML
+  version: 2.0
+  serverPort: 8082
+  mock: true
