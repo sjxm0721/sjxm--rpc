@@ -13,6 +13,7 @@
         <module>example-consumer</module>
         <module>example-provider</module>
         <module>sjxm-rpc-easy</module>
+        <module>sjxm-rpc-core</module>
     </modules>
 
     <properties>
