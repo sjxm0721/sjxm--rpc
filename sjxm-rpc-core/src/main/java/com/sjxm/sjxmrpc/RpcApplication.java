@@ -30,7 +30,6 @@ public class RpcApplication {
         RpcConfig newRpcConfig;
         try{
             newRpcConfig = ConfigUtils.loadConfig(RpcConfig.class, RpcConstant.DEFAULT_CONFIG_PREFIX);
-            System.out.println("获取到配置："+newRpcConfig);
         }catch (Exception e){
             newRpcConfig = new RpcConfig();
         }

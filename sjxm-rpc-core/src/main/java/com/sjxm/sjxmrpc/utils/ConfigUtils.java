@@ -21,8 +21,7 @@ public class ConfigUtils {
      * @param <T>
      */
     public static <T>  T loadConfig(Class<T> tClass, String prefix) {
-        T t = loadConfig(tClass, prefix, "");
-        return t;
+        return loadConfig(tClass, prefix, "");
     }
 
     public static <T> T loadConfig(Class<T> tClass, String prefix, String environment) {
@@ -34,6 +33,7 @@ public class ConfigUtils {
             String finalPath = configFileBuilder + suffix;
             if(!FileUtil.exist(finalPath))continue;
             Props props = new Props(configFileBuilder + suffix);
+            props.autoLoad(true);
             if(finalPath.endsWith(".yaml") || finalPath.endsWith(".yml")){
                 if(!props.isEmpty()){
                     return props.toBean(tClass);
