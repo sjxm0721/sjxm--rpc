@@ -41,7 +41,7 @@
         </dependency>
         <dependency>
             <groupId>com.sjxm</groupId>
-            <artifactId>example-common</artifactId>
+            <artifactId>example-cd</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

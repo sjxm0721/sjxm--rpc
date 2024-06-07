@@ -75,6 +75,12 @@
             <version>2.9.6</version>
         </dependency>
 
+<!--        etcd-->
+        <dependency>
+            <groupId>io.etcd</groupId>
+            <artifactId>jetcd-core</artifactId>
+            <version>0.7.7</version>
+        </dependency>
     </dependencies>
 
 </project>
