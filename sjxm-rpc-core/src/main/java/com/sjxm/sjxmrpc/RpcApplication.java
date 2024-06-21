@@ -1,7 +1,10 @@
 package com.sjxm.sjxmrpc;
 
+import com.sjxm.sjxmrpc.config.RegistryConfig;
 import com.sjxm.sjxmrpc.config.RpcConfig;
 import com.sjxm.sjxmrpc.constant.RpcConstant;
+import com.sjxm.sjxmrpc.registry.Registry;
+import com.sjxm.sjxmrpc.registry.RegistryFactory;
 import com.sjxm.sjxmrpc.utils.ConfigUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,6 +24,11 @@ public class RpcApplication {
     public static void init(RpcConfig newRpcConfig) {
         rpcConfig = newRpcConfig;
         log.info("rpc init,config = {}",newRpcConfig.toString());
+        //注册中心初始化
+        RegistryConfig registryConfig = rpcConfig.getRegistryConfig();
+        Registry registry = RegistryFactory.getInstance(registryConfig.getRegistry());
+        registry.init(registryConfig);
+        log.info("registry init,config = {}",registryConfig);
     }
 
     /**

@@ -1,8 +1,12 @@
 package com.sjxm.sjxmrpc.model;
 
+import cn.hutool.core.util.StrUtil;
+import lombok.Data;
+
 /**
  * 服务元信息(注册信息)
  */
+@Data
 public class ServiceMetaInfo {
 
     /**
@@ -19,6 +23,16 @@ public class ServiceMetaInfo {
      * 服务地址
      */
     private String serviceAddress;
+
+    /**
+     * 主机名
+     */
+    private String serviceHost;
+
+    /**
+     * 端口号
+     */
+    private String servicePort;
 
     /**
      * 服务分组(暂未实现)
@@ -40,5 +54,14 @@ public class ServiceMetaInfo {
      */
     public String getServiceNodeKey(){
         return String.format("%s:%s",getServiceKey(),serviceAddress);
+    }
+
+
+    public String getServiceAddress(){
+        if(!StrUtil.contains(serviceHost,"http")){
+            return String.format("http://%s:%s",serviceHost,servicePort);
+        }
+
+        return String.format("%s:%s",serviceHost,servicePort);
     }
 }

@@ -1,10 +1,16 @@
 package com.sjxm.sjxmrpc.proxy;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import com.sjxm.sjxmrpc.RpcApplication;
+import com.sjxm.sjxmrpc.config.RpcConfig;
+import com.sjxm.sjxmrpc.constant.RpcConstant;
 import com.sjxm.sjxmrpc.model.RpcRequest;
 import com.sjxm.sjxmrpc.model.RpcResponse;
+import com.sjxm.sjxmrpc.model.ServiceMetaInfo;
+import com.sjxm.sjxmrpc.registry.Registry;
+import com.sjxm.sjxmrpc.registry.RegistryFactory;
 import com.sjxm.sjxmrpc.serializer.JdkSerializer;
 import com.sjxm.sjxmrpc.serializer.Serializer;
 import com.sjxm.sjxmrpc.serializer.SerializerFactory;
@@ -12,6 +18,7 @@ import com.sjxm.sjxmrpc.serializer.SerializerFactory;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * 动态代理：根据要生成的对象的类型，自动生成一个代理对象
@@ -63,8 +70,22 @@ public class ServiceProxy implements InvocationHandler {
             //序列化
             byte[] bodyBytes = serializer.serialize(rpcRequest);
             //发送请求
-            //todo 注意，这里地址被硬编码了（需要使用注册中心和服务发现机制解决）
-            try(HttpResponse httpResponse = HttpRequest.post("http://localhost:8080").body(bodyBytes).execute()){
+            //从注册中心获取服务提供者请求地址
+            RpcConfig rpcConfig = RpcApplication.getRpcConfig();
+            Registry registry = RegistryFactory.getInstance(rpcConfig.getRegistryConfig().getRegistry());
+            ServiceMetaInfo serviceMetaInfo = new ServiceMetaInfo();
+            serviceMetaInfo.setServiceName(method.getDeclaringClass().getName());
+            serviceMetaInfo.setServiceVersion(RpcConstant.DEFAULT_SERVICE_VERSION);
+            List<ServiceMetaInfo> serviceMetaInfoList = registry.serviceDiscovery(serviceMetaInfo.getServiceKey());
+            if(CollUtil.isEmpty(serviceMetaInfoList)){
+                throw new RuntimeException("暂无服务地址");
+            }
+
+            //暂时取第一个
+            ServiceMetaInfo selectedServiceMetaInfo = serviceMetaInfoList.get(0);
+
+            //发送请求
+            try(HttpResponse httpResponse = HttpRequest.post(selectedServiceMetaInfo.getServiceAddress()).body(bodyBytes).execute()){
                 byte[] result = httpResponse.bodyBytes();
                 //反序列化
                 RpcResponse rpcResponse = serializer.deserialize(result,RpcResponse.class);

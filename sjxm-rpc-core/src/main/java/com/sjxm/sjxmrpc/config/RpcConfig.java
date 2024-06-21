@@ -34,6 +34,9 @@ public class RpcConfig {
      */
     private boolean mock = false;
 
+
+    private RegistryConfig registryConfig;
+
     /**
      * 序列化器
      */
