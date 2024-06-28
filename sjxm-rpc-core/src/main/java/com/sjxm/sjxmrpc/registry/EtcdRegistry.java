@@ -9,13 +9,17 @@ import com.sjxm.sjxmrpc.model.ServiceMetaInfo;
 import io.etcd.jetcd.*;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
+import io.etcd.jetcd.watch.WatchEvent;
 import jdk.javadoc.internal.doclets.toolkit.taglets.SeeTaglet;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.WatchService;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 
 /**
@@ -27,10 +31,20 @@ public class EtcdRegistry implements Registry {
 
     private KV kvClient;
 
+    /**
+     * 注册中心服务缓存
+     */
+    private final RegistryServiceCache registryServiceCache = new RegistryServiceCache();
+
 
     private static final String ETCD_ROOT_PATH = "/rpc/";
 
     private final Set<String> localRegisterNodeKeySet = new HashSet<>();
+
+    /**
+     * 正在监听的key集合
+     */
+    private final Set<String> watchingKeySet = new ConcurrentSkipListSet<>();
 
     @Override
     public void init(RegistryConfig registryConfig) {
@@ -70,18 +84,32 @@ public class EtcdRegistry implements Registry {
 
     @Override
     public List<ServiceMetaInfo> serviceDiscovery(String serviceKey) {
+
+        //优先从缓存获取服务
+        List<ServiceMetaInfo> cachedServiceMetaInfoList = registryServiceCache.readCache();
+        if(cachedServiceMetaInfoList != null){
+            return cachedServiceMetaInfoList;
+        }
+
         //前缀搜索，结尾一定要加'/'
-        String searchPrefix = ETCD_ROOT_PATH + serviceKey+"/";
+        String searchPrefix = ETCD_ROOT_PATH + serviceKey + "/";
 
         try{
             //前缀查询
             GetOption getOption = GetOption.builder().isPrefix(true).build();
             List<KeyValue> kvs = kvClient.get(ByteSequence.from(searchPrefix,StandardCharsets.UTF_8), getOption).get().getKvs();
             //解析服务信息
-            return kvs.stream().map(keyValue -> {
+            List<ServiceMetaInfo> serviceMetaInfoList = kvs.stream().map(keyValue -> {
+                String key = keyValue.getKey().toString(StandardCharsets.UTF_8);
+                //监听key的变化
+                watch(key);
                 String value = keyValue.getValue().toString(StandardCharsets.UTF_8);
-                return JSONUtil.toBean(value, ServiceMetaInfo.class);
+                return JSONUtil.toBean(value,ServiceMetaInfo.class);
             }).collect(Collectors.toList());
+
+            //写入缓存服务
+            registryServiceCache.writeCache(serviceMetaInfoList);
+            return serviceMetaInfoList;
         }catch (Exception e){
             throw new RuntimeException("获取服务列表失败",e);
         }
@@ -90,6 +118,15 @@ public class EtcdRegistry implements Registry {
     @Override
     public void destroy() {
         System.out.println("当前节点下线");
+        //下线节点
+        //遍历本节点所有的key
+        for(String key : localRegisterNodeKeySet){
+            try{
+                kvClient.delete(ByteSequence.from(key, StandardCharsets.UTF_8)).get();
+            }catch (Exception e){
+                throw new RuntimeException(key + "节点下线失败");
+            }
+        }
         //释放资源
         if(kvClient != null) {
             kvClient.close();
@@ -129,5 +166,28 @@ public class EtcdRegistry implements Registry {
         //支持秒级别定时任务
         CronUtil.setMatchSecond(true);
         CronUtil.start();
+    }
+
+    @Override
+    public void watch(String serviceNodeKey) {
+        Watch watchClient = client.getWatchClient();
+        //之前未被监听，开启监听
+        boolean newWatch = watchingKeySet.add(serviceNodeKey);
+        if(newWatch){
+            watchClient.watch(ByteSequence.from(serviceNodeKey,StandardCharsets.UTF_8),response -> {
+                for(WatchEvent event: response.getEvents()){
+                    switch (event.getEventType()){
+                        //key删除时触发
+                        case DELETE:
+                            //清除注册服务缓存
+                            registryServiceCache.clearCache();
+                            break;
+                        case PUT:
+                        default:
+                            break;
+                    }
+                }
+            });
+        }
     }
 }
