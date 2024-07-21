@@ -1,6 +1,7 @@
 package com.sjxm.sjxmrpc.registry;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.ConcurrentHashSet;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.task.Task;
 import cn.hutool.json.JSONUtil;
@@ -44,7 +45,7 @@ public class EtcdRegistry implements Registry {
     /**
      * 正在监听的key集合
      */
-    private final Set<String> watchingKeySet = new ConcurrentSkipListSet<>();
+    private final Set<String> watchingKeySet = new ConcurrentHashSet<>();
 
     @Override
     public void init(RegistryConfig registryConfig) {

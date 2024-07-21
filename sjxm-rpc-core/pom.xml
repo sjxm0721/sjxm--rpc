@@ -75,6 +75,13 @@
             <version>2.9.6</version>
         </dependency>
 
+<!--        zookeeper-->
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-x-discovery</artifactId>
+            <version>5.6.0</version>
+        </dependency>
+
 <!--        etcd-->
         <dependency>
             <groupId>io.etcd</groupId>
