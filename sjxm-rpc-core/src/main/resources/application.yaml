@@ -1,0 +1,8 @@
+rpc:
+  name: sjxmrpcYAML
+  version: 2.0
+  serverPort: 8081
+  mock: true
+  registryConfig:
+    registry: zookeeper
+    address: localhost:2181

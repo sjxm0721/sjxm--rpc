@@ -8,8 +8,7 @@ import com.sjxm.sjxmrpc.model.ServiceMetaInfo;
 import com.sjxm.sjxmrpc.registry.LocalRegistry;
 import com.sjxm.sjxmrpc.registry.Registry;
 import com.sjxm.sjxmrpc.registry.RegistryFactory;
-import com.sjxm.sjxmrpc.server.HttpServer;
-import com.sjxm.sjxmrpc.server.VertxHttpServer;
+import com.sjxm.sjxmrpc.server.tcp.VertxTcpServer;
 
 /**
  * 服务提供者示例
@@ -38,8 +37,12 @@ public class ProviderExample {
         }
 
         //启动web服务
-        HttpServer httpServer = new VertxHttpServer();
-        httpServer.doStart(RpcApplication.getRpcConfig().getServerPort());
+//        HttpServer httpServer = new VertxHttpServer();
+//        httpServer.doStart(RpcApplication.getRpcConfig().getServerPort());
+
+        //启动TCP服务
+        VertxTcpServer vertxTcpServer = new VertxTcpServer();
+        vertxTcpServer.doStart(8080);
     }
 
 }

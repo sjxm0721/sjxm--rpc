@@ -32,7 +32,7 @@ public class ServiceMetaInfo {
     /**
      * 端口号
      */
-    private String servicePort;
+    private Integer servicePort;
 
     /**
      * 服务分组(暂未实现)

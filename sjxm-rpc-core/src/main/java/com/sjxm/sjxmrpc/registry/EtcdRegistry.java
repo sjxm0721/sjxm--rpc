@@ -11,16 +11,12 @@ import io.etcd.jetcd.*;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
 import io.etcd.jetcd.watch.WatchEvent;
-import jdk.javadoc.internal.doclets.toolkit.taglets.SeeTaglet;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.WatchService;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 
 /**

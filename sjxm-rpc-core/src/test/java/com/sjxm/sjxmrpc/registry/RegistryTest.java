@@ -28,19 +28,19 @@ public class RegistryTest {
         serviceMetaInfo.setServiceName("sjxm-service");
         serviceMetaInfo.setServiceVersion("1.0");
         serviceMetaInfo.setServiceHost("localhost");
-        serviceMetaInfo.setServicePort("1234");
+        serviceMetaInfo.setServicePort(1234);
         registry.register(serviceMetaInfo);
         serviceMetaInfo = new ServiceMetaInfo();
         serviceMetaInfo.setServiceName("sjxm-service");
         serviceMetaInfo.setServiceVersion("1.0");
         serviceMetaInfo.setServiceHost("localhost");
-        serviceMetaInfo.setServicePort("1235");
+        serviceMetaInfo.setServicePort(1235);
         registry.register(serviceMetaInfo);
         serviceMetaInfo = new ServiceMetaInfo();
         serviceMetaInfo.setServiceName("sjxm-service");
         serviceMetaInfo.setServiceVersion("2.0");
         serviceMetaInfo.setServiceHost("localhost");
-        serviceMetaInfo.setServicePort("1234");
+        serviceMetaInfo.setServicePort(1234);
         registry.register(serviceMetaInfo);
     }
 
@@ -49,7 +49,7 @@ public class RegistryTest {
         serviceMetaInfo.setServiceName("sjxm-service");
         serviceMetaInfo.setServiceVersion("1.0");
         serviceMetaInfo.setServiceHost("localhost");
-        serviceMetaInfo.setServicePort("1234");
+        serviceMetaInfo.setServicePort(1234);
         registry.unRegister(serviceMetaInfo);
     }
 

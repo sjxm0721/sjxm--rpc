@@ -11,7 +11,7 @@ import java.util.Objects;
  */
 public class ConfigUtils {
 
-    private static final String[] suffixes= {".yaml",".yml",".properties"};
+    private static final String[] suffixes= {".properties",".yaml",".yml"};
 
     /**
      * 加载配置对象
