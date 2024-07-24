@@ -1,5 +1,6 @@
 package com.sjxm.sjxmrpc.config;
 
+import com.sjxm.sjxmrpc.loadbalancer.LoadBalancerKeys;
 import com.sjxm.sjxmrpc.serializer.SerializerKeys;
 import lombok.Data;
 
@@ -41,4 +42,9 @@ public class RpcConfig {
      * 序列化器
      */
     private String serializer = SerializerKeys.JDK;
+
+    /**
+     * 负载均衡器
+     */
+    private String loadBalancer = LoadBalancerKeys.ROUND_ROBIN;
 }
