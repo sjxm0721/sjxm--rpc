@@ -1,6 +1,8 @@
 package com.sjxm.sjxmrpc.config;
 
 import com.sjxm.sjxmrpc.fault.retry.RetryStrategyKeys;
+import com.sjxm.sjxmrpc.fault.tolerant.TolerantStrategy;
+import com.sjxm.sjxmrpc.fault.tolerant.TolerantStrategyKeys;
 import com.sjxm.sjxmrpc.loadbalancer.LoadBalancerKeys;
 import com.sjxm.sjxmrpc.serializer.SerializerKeys;
 import lombok.Data;
@@ -53,4 +55,9 @@ public class RpcConfig {
      * 重试策略
      */
     private String retryStrategy = RetryStrategyKeys.NO;
+
+    /**
+     * 容错策略
+     */
+    private String tolerantStrategy = TolerantStrategyKeys.FAIL_FAST;
 }

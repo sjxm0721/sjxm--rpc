@@ -9,6 +9,8 @@ import com.sjxm.sjxmrpc.config.RpcConfig;
 import com.sjxm.sjxmrpc.constant.RpcConstant;
 import com.sjxm.sjxmrpc.fault.retry.RetryStrategy;
 import com.sjxm.sjxmrpc.fault.retry.RetryStrategyFactory;
+import com.sjxm.sjxmrpc.fault.tolerant.TolerantStrategy;
+import com.sjxm.sjxmrpc.fault.tolerant.TolerantStrategyFactory;
 import com.sjxm.sjxmrpc.loadbalancer.LoadBalancer;
 import com.sjxm.sjxmrpc.loadbalancer.LoadBalancerFactory;
 import com.sjxm.sjxmrpc.model.RpcRequest;
@@ -99,10 +101,18 @@ public class ServiceProxy implements InvocationHandler {
             requestParams.put("methodName",rpcRequest.getMethodName());
             ServiceMetaInfo selectedServiceMetaInfo = loadBalancer.select(requestParams,serviceMetaInfoList);
 
-            //使用重试机制
-            RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
             //发送rpc请求(基于TCP的)
-            RpcResponse rpcResponse =  retryStrategy.doRetry(()->VertxTcpClient.doRequest(rpcRequest,selectedServiceMetaInfo));
+            //使用重试机制和容错机制
+            RpcResponse rpcResponse;
+            try{
+                //重试机制
+                RetryStrategy retryStrategy = RetryStrategyFactory.getInstance(rpcConfig.getRetryStrategy());
+                rpcResponse =  retryStrategy.doRetry(()->VertxTcpClient.doRequest(rpcRequest,selectedServiceMetaInfo));
+            }catch (Exception e){
+                //容错机制
+                TolerantStrategy tolerantStrategy = TolerantStrategyFactory.getInstance(rpcConfig.getTolerantStrategy());
+                rpcResponse = tolerantStrategy.doTolerant(null,e);
+            }
             return rpcResponse.getData();
         }catch (Exception e){
             throw new RuntimeException("调用失败");

@@ -1,0 +1,4 @@
+failBack=com.sjxm.sjxmrpc.fault.tolerant.FailBackTolerantStrategy
+failFast=com.sjxm.sjxmrpc.fault.tolerant.FailFastTolerantStrategy
+failOver=com.sjxm.sjxmrpc.fault.tolerant.FailOverTolerantStrategy
+failSafe=com.sjxm.sjxmrpc.fault.tolerant.FailSafeTolerantStrategy
