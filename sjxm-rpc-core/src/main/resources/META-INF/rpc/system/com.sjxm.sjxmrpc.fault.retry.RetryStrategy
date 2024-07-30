@@ -1,0 +1,2 @@
+no=com.sjxm.sjxmrpc.fault.retry.NoRetryStrategy
+fixedInterval=com.sjxm.sjxmrpc.fault.retry.FixedIntervalRetryStrategy

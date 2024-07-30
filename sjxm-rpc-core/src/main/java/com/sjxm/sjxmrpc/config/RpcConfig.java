@@ -1,5 +1,6 @@
 package com.sjxm.sjxmrpc.config;
 
+import com.sjxm.sjxmrpc.fault.retry.RetryStrategyKeys;
 import com.sjxm.sjxmrpc.loadbalancer.LoadBalancerKeys;
 import com.sjxm.sjxmrpc.serializer.SerializerKeys;
 import lombok.Data;
@@ -47,4 +48,9 @@ public class RpcConfig {
      * 负载均衡器
      */
     private String loadBalancer = LoadBalancerKeys.ROUND_ROBIN;
+
+    /**
+     * 重试策略
+     */
+    private String retryStrategy = RetryStrategyKeys.NO;
 }
